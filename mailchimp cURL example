@@ -1,0 +1,1103 @@
+<?php
+function run_cron_script() {
+
+$snowDepthNew = get_field('sk_new_snow_24hrs', 'option');
+$snowDepthBase = get_field('sk_base_snow_depth', 'option');
+$snowDepthSummit = get_field('sk_summit_snow_depth', 'option');
+$snowDepthTotal = get_field('sk_season_total', 'option');
+$liftsTotal = 3;
+$liftsOpen = 0;
+if ( get_field('sk_raferty_chairlift', 'option') == 'Open' ) $liftsOpen++;
+if ( get_field('sk_cougar_triple_chairlift', 'option') == 'Open' ) $liftsOpen++;
+if ( get_field('sk_summit_chairlift', 'option') == 'Open' ) $liftsOpen++;
+$runsTotal = count(get_field('sk_runs_status', 'option' ));
+$runsOpen = 0;
+foreach( get_field('sk_runs_status', 'option' ) as $run )
+  if ( $run['run_open'] == 'Open' )
+    $runsOpen++;
+$updated = get_field('sk_snow_report_updated_on', 'option');
+$chairliftraferty = get_field('sk_raferty_chairlift', 'option');
+$chairliftcougar = get_field('sk_cougar_triple_chairlift', 'option');
+$chairliftsummit = get_field('sk_summit_chairlift', 'option');
+$runs = get_field('sk_runs_status', 'option' );
+foreach ( $runs as $run ) :
+       $runname_array[] = $run['run_name'];
+       $runopen_array[] = $run['run_open'];
+       $rungroomed_array[] = $run['run_groomed'];
+ endforeach;
+
+$generalconditions = strip_tags(get_field('general_mountain_conditions', 'option'));
+
+            $curl = curl_init(); //instanitate instance of cURL.
+
+            curl_setopt_array($curl, array(
+              CURLOPT_URL => "src url",
+              CURLOPT_RETURNTRANSFER => 1, //return response as string instead of to the screen
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 100, //number of sec to allow cURL to execute
+              CURLOPT_POSTFIELDS => '{"html": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+              <!doctype html>
+              <html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">
+                <head>
+                  <meta charset=\"UTF-8\">
+                      <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+                      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+                  <title>*|MC:SUBJECT|*</title>
+
+
+              <!--END OF STYLE-->
+              <style type=\"text/css\">
+                  td{padding: 5px;}
+                  p{
+                    margin:10px 0;
+                    padding:0;
+                  }
+                  table{
+                    border-collapse:collapse;
+                  }
+                  h1,h2,h3,h4,h5,h6{
+                    display:block;
+                    margin:0;
+                    padding:0;
+                  }
+                  img,a img{
+                    border:0;
+                    height:auto;
+                    outline:none;
+                    text-decoration:none;
+                  }
+                  body,#bodyTable,#bodyCell{
+                    height:100%;
+                    margin:0;
+                    padding:0;
+                    width:100%;
+                  }
+                  #outlook a{
+                    padding:0;
+                  }
+                  img{
+                    -ms-interpolation-mode:bicubic;
+                  }
+                  table{
+                    mso-table-lspace:0pt;
+                    mso-table-rspace:0pt;
+                  }
+                  .ReadMsgBody{
+                    width:100%;
+                  }
+                  .ExternalClass{
+                    width:100%;
+                  }
+                  p,a,li,td,blockquote{
+                    mso-line-height-rule:exactly;
+                  }
+                  a[href^=tel],a[href^=sms]{
+                    color:inherit;
+                    cursor:default;
+                    text-decoration:none;
+                  }
+                  p,a,li,td,body,table,blockquote{
+                    -ms-text-size-adjust:100%;
+                    -webkit-text-size-adjust:100%;
+                  }
+                  .ExternalClass,.ExternalClass p,.ExternalClass td,.ExternalClass div,.ExternalClass span,.ExternalClass font{
+                    line-height:100%;
+                  }
+                  a[x-apple-data-detectors]{
+                    color:inherit !important;
+                    text-decoration:none !important;
+                    font-size:inherit !important;
+                    font-family:inherit !important;
+                    font-weight:inherit !important;
+                    line-height:inherit !important;
+                  }
+                  .templateContainer{
+                    max-width:600px !important;
+                  }
+                  a.mcnButton{
+                    display:block;
+                  }
+                  .mcnImage{
+                    vertical-align:bottom;
+                  }
+                  .mcnTextContent{
+                    word-break:break-word;
+                  }
+                  .mcnTextContent img{
+                    height:auto !important;
+                  }
+                  .mcnDividerBlock{
+                    table-layout:fixed !important;
+                  }
+                  body,#bodyTable{
+                    /*@editable*/background-color:white;
+                  }
+                  #bodyCell{
+                    /*@editable*/border-top:0;
+                  }
+                  h1{
+                    /*@editable*/color:#202020;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:26px;
+                    /*@editable*/font-style:normal;
+                    /*@editable*/font-weight:bold;
+                    /*@editable*/line-height:125%;
+                    /*@editable*/letter-spacing:normal;
+                    /*@editable*/text-align:left;
+                  }
+                  h2{
+                    /*@editable*/color:#202020;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:22px;
+                    /*@editable*/font-style:normal;
+                    /*@editable*/font-weight:bold;
+                    /*@editable*/line-height:125%;
+                    /*@editable*/letter-spacing:normal;
+                    /*@editable*/text-align:left;
+                  }
+                  h3{
+                    /*@editable*/color:#202020;
+                    /*@editable*/font-family:times new roman,times,baskerville,georgia,serif;;
+                    /*@editable*/font-size:26px;
+                    /*@editable*/font-style:normal;
+                    /*@editable*/font-weight:bold;
+                    /*@editable*/line-height:125%;
+                    /*@editable*/letter-spacing:normal;
+                    /*@editable*/text-align:center;
+                    /*@editable*/padding-top:12px;
+                    /*@editable*/text-decoration:underline;
+
+                  }
+                  h4{
+                    /*@editable*/color:#202020;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:18px;
+                    /*@editable*/font-style:normal;
+                    /*@editable*/font-weight:bold;
+                    /*@editable*/line-height:125%;
+                    /*@editable*/letter-spacing:normal;
+                    /*@editable*/text-align:center;
+                  }
+                  h5{
+                    /*@editable*/color:#202020;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:16px;
+                    /*@editable*/font-style:normal;
+                    /*@editable*/line-height:150%;
+                    /*@editable*/letter-spacing:normal;
+                    /*@editable*/text-align:center;
+                  }
+                  #templatePreheader{
+                    /*@editable*/background-color:#FAFAFA;
+                    /*@editable*/background-image:none;
+                    /*@editable*/background-repeat:no-repeat;
+                    /*@editable*/background-position:center;
+                    /*@editable*/background-size:cover;
+                    /*@editable*/border-top:0;
+                    /*@editable*/border-bottom:0;
+                    /*@editable*/padding-top:9px;
+                    /*@editable*/padding-bottom:9px;
+                  }
+                  #templatePreheader .mcnTextContent,#templatePreheader .mcnTextContent p{
+                    /*@editable*/color:#656565;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:12px;
+                    /*@editable*/line-height:150%;
+                    /*@editable*/text-align:left;
+                  }
+                  #templatePreheader .mcnTextContent a,#templatePreheader .mcnTextContent p a{
+                    /*@editable*/color:#656565;
+                    /*@editable*/font-weight:normal;
+                    /*@editable*/text-decoration:underline;
+                  }
+                  #templateHeader{
+                    /*@editable*/background-color:#FFFFFF;
+                    /*@editable*/background-image:none;
+                    /*@editable*/background-repeat:no-repeat;
+                    /*@editable*/background-position:center;
+                    /*@editable*/background-size:cover;
+                    /*@editable*/border-top:0;
+                    /*@editable*/border-bottom:0;
+                    /*@editable*/padding-top:9px;
+                    /*@editable*/padding-bottom:0;
+                  }
+                  #templateHeader .mcnTextContent,#templateHeader .mcnTextContent p{
+                    /*@editable*/color:#202020;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:16px;
+                    /*@editable*/line-height:150%;
+                    /*@editable*/text-align:left;
+                  }
+                  #templateHeader .mcnTextContent a,#templateHeader .mcnTextContent p a{
+                    /*@editable*/color:#2BAADF;
+                    /*@editable*/font-weight:normal;
+                    /*@editable*/text-decoration:underline;
+                  }
+                  #templateBody{
+                    /*@editable*/background-image:none;
+                    /*@editable*/background-repeat:no-repeat;
+                    /*@editable*/background-position:center;
+                    /*@editable*/background-size:cover;
+                    /*@editable*/border-top:0;
+                    /*@editable*/border-bottom:0;
+                    /*@editable*/padding-top:9px;
+                    /*@editable*/padding-bottom:9px;
+                  }
+                  #templateBody .mcnTextContent,#templateBody .mcnTextContent p{
+                    /*@editable*/color:#202020;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:16px;
+                    /*@editable*/line-height:150%;
+                    /*@editable*/text-align:left;
+                  }
+                  #templateBody .mcnTextContent a,#templateBody .mcnTextContent p a{
+                    /*@editable*/color:#2BAADF;
+                    /*@editable*/font-weight:normal;
+                    /*@editable*/text-decoration:underline;
+                  }
+                  #templateColumns{
+                    /*@editable*/background-color:#0072bc;
+                    /*@editable*/background-image:none;
+                    /*@editable*/background-repeat:no-repeat;
+                    /*@editable*/background-position:center;
+                    /*@editable*/background-size:cover;
+                    /*@editable*/border-top:0;
+                    /*@editable*/border-bottom:2px solid #EAEAEA;
+                    /*@editable*/padding-top:0;
+                    /*@editable*/padding-bottom:9px;
+                  }
+                  #templateColumns .columnContainer .mcnTextContent,#templateColumns .columnContainer .mcnTextContent p{
+                    /*@editable*/color:#202020;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:16px;
+                    /*@editable*/line-height:150%;
+                    /*@editable*/text-align:left;
+                  }
+                  #templateColumns .columnContainer .mcnTextContent a,#templateColumns .columnContainer .mcnTextContent p a{
+                    /*@editable*/color:#2BAADF;
+                    /*@editable*/font-weight:normal;
+                    /*@editable*/text-decoration:underline;
+                  }
+                  #templateFooter{
+                    /*@editable*/background-color:white;
+                    /*@editable*/background-image:none;
+                    /*@editable*/background-repeat:no-repeat;
+                    /*@editable*/background-position:center;
+                    /*@editable*/background-size:cover;
+                    /*@editable*/border-top:0;
+                    /*@editable*/border-bottom:0;
+                    /*@editable*/padding-top:9px;
+                    /*@editable*/padding-bottom:9px;
+                  }
+                  #templateFooter .mcnTextContent,#templateFooter .mcnTextContent p{
+                    /*@editable*/color:#656565;
+                    /*@editable*/font-family:Helvetica;
+                    /*@editable*/font-size:12px;
+                    /*@editable*/line-height:150%;
+                    /*@editable*/text-align:center;
+                  }
+                  #templateFooter .mcnTextContent a,#templateFooter .mcnTextContent p a{
+                    /*@editable*/color:#656565;
+                    /*@editable*/font-weight:normal;
+                    /*@editable*/text-decoration:underline;
+                  }
+                @media only screen and (min-width:768px){
+                  .templateContainer{
+                    width:600px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  body,table,td,p,a,li,blockquote{
+                    -webkit-text-size-adjust:none !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  body{
+                    width:100% !important;
+                    min-width:100% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  #bodyCell{
+                    padding-top:10px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .columnWrapper{
+                    max-width:100% !important;
+                    width:100% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnImage{
+                    width:100% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnCartContainer,.mcnCaptionTopContent,.mcnRecContentContainer,.mcnCaptionBottomContent,.mcnTextContentContainer,.mcnBoxedTextContentContainer,.mcnImageGroupContentContainer,.mcnCaptionLeftTextContentContainer,.mcnCaptionRightTextContentContainer,.mcnCaptionLeftImageContentContainer,.mcnCaptionRightImageContentContainer,.mcnImageCardLeftTextContentContainer,.mcnImageCardRightTextContentContainer{
+                    max-width:100% !important;
+                    width:100% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnBoxedTextContentContainer{
+                    min-width:100% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnImageGroupContent{
+                    padding:9px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnCaptionLeftContentOuter .mcnTextContent,.mcnCaptionRightContentOuter .mcnTextContent{
+                    padding-top:9px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnImageCardTopImageContent,.mcnCaptionBlockInner .mcnCaptionTopContent:last-child .mcnTextContent{
+                    padding-top:18px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnImageCardBottomImageContent{
+                    padding-bottom:9px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnImageGroupBlockInner{
+                    padding-top:0 !important;
+                    padding-bottom:0 !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnImageGroupBlockOuter{
+                    padding-top:9px !important;
+                    padding-bottom:9px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnTextContent,.mcnBoxedTextContentColumn{
+                    padding-right:18px !important;
+                    padding-left:18px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnImageCardLeftImageContent,.mcnImageCardRightImageContent{
+                    padding-right:18px !important;
+                    padding-bottom:0 !important;
+                    padding-left:18px !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcpreview-image-uploader{
+                    display:none !important;
+                    width:100% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  h1{
+                    /*@editable*/font-size:22px !important;
+                    /*@editable*/line-height:125% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  h2{
+                    /*@editable*/font-size:20px !important;
+                    /*@editable*/line-height:125% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  h3{
+                    /*@editable*/font-size:18px !important;
+                    /*@editable*/line-height:125% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  h4{
+                    /*@editable*/font-size:16px !important;
+                    /*@editable*/line-height:150% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  .mcnBoxedTextContentContainer .mcnTextContent,.mcnBoxedTextContentContainer .mcnTextContent p{
+                    /*@editable*/font-size:14px !important;
+                    /*@editable*/line-height:150% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  #templatePreheader{
+                    /*@editable*/display:block !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  #templatePreheader .mcnTextContent,#templatePreheader .mcnTextContent p{
+                    /*@editable*/font-size:14px !important;
+                    /*@editable*/line-height:150% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  #templateHeader .mcnTextContent,#templateHeader .mcnTextContent p{
+                    /*@editable*/font-size:16px !important;
+                    /*@editable*/line-height:150% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  #templateBody .mcnTextContent,#templateBody .mcnTextContent p{
+                    /*@editable*/font-size:16px !important;
+                    /*@editable*/line-height:150% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  #templateColumns .columnContainer .mcnTextContent,#templateColumns .columnContainer .mcnTextContent p{
+                    /*@editable*/font-size:16px !important;
+                    /*@editable*/line-height:150% !important;
+                  }
+
+              }	@media only screen and (max-width: 480px){
+                  #templateFooter .mcnTextContent,#templateFooter .mcnTextContent p{
+                    /*@editable*/font-size:14px !important;
+                    /*@editable*/line-height:150% !important;
+                  }
+
+              }</style>
+              </head>
+              <body>
+                <center>
+                  <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"100%\" width=\"100%\" id=\"bodyTable\">
+                      <tr>
+                        <td align=\"center\" valign=\"top\" id=\"bodyCell\">
+                           <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">
+                                <tr>
+                                <td align=\"center\" valign=\"top\" id=\"templatePreheader\">
+                                <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"templateContainer\">
+                                <tr>
+                                <td valign=\"top\" class=\"preheaderContainer\">
+                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnTextBlock\" style=\"min-width:100%;\">
+                                    <tbody class=\"mcnTextBlockOuter\">
+                                        <tr>
+                                            <td valign=\"top\" class=\"mcnTextBlockInner\" style=\"padding-top:9px;\">
+                                                <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:390px;\" width=\"100%\" class=\"mcnTextContentContainer\">
+                                                  <tbody>
+                                                      <tr>
+                                                          <td valign=\"top\" class=\"mcnTextContent\" style=\"padding-top:0; padding-left:18px; padding-bottom:9px; padding-right:18px;\">
+                                                          </td>
+                                                      </tr>
+                                                  </tbody>
+                                                </table>
+
+                                                <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:210px;\" width=\"100%\" class=\"mcnTextContentContainer\">
+                                                    <tbody><tr>
+                                                        <td valign=\"top\" class=\"mcnTextContent\" style=\"padding-top:0; padding-left:18px; padding-bottom:9px; padding-right:18px;\">
+                                                            <a href=\"*|ARCHIVE|*\" target=\"_blank\">View this email in your browser</a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </td>
+                                </tr>
+                                </table>
+                                </td>
+                                </tr>
+
+                                <tr>
+                                  <td align=\"center\" valign=\"top\" id=\"templateHeader\">
+                                    <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"templateContainer\">
+                                      <tr>
+                                        <td valign=\"top\" class=\"headerContainer\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnImageBlock\" style=\"min-width:100%;\">
+                                          <tbody class=\"mcnImageBlockOuter\">
+                                            <tr>
+                                              <td valign=\"top\" style=\"padding:9px\" class=\"mcnImageBlockInner\">
+                                                <table align=\"left\" width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"mcnImageContentContainer\" style=\"min-width:100%;\">
+                                                  <tbody>
+                                                    <tr>
+                                                      <td class=\"mcnImageContent\" valign=\"top\" style=\"padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;\">
+                                                      <img align=\"center\" alt=\"Cowboy Coaster\" src=\"https://gallery.mailchimp.com/4d028defeab552de152641210/images/89f5c3f0-22fc-4534-9e5d-606fb5c8a45e.png\" width=\"500\" style=\"max-width:500px; padding-bottom: 0; display: inline !important; vertical-align: bottom;\" class=\"mcnImage\">
+                                                      </td>
+                                                    </tr>
+                                                  </tbody>
+                                                </table>
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                          </table></td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+
+                                <tr>
+                                  <td align=\"center\" valign=\"top\" id=\"templateBody\">
+                                    <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"templateContainer\">
+                                      <tr>
+                                        <td valign=\"top\" class=\"bodyContainer\">
+                                          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnTextBlock\" style=\"min-width:100%;\">
+                                            <tbody class=\"mcnTextBlockOuter\">
+                                              <tr>
+                                                <td valign=\"top\" class=\"mcnTextBlockInner\" style=\"padding-top:9px;\">
+                                                  <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:100%; min-width:100%;\" width=\"100%\" class=\"mcnTextContentContainer\">
+                                                    <tbody>
+                                                      <tr>
+                                                        <td valign=\"top\" class=\"mcnTextContent\" style=\"padding: 0px 18px 9px; line-height: 200%;\">
+                                                          <div style=\"text-align: center;\"><span style=\"font-family:times new roman,times,baskerville,georgia,serif\"><span><span style=\"font-size:30px\">JACKSON HOLE SKI REPORT - CONDITIONS, &amp; SNOW REPORT<strong>&nbsp;</strong></span></span></span><br>
+                                                            <span style=\"font-style:italic;  letter-spacing:1px\" id=\"conditions-date\">Conditions Last Updated: '.$updated.'</span>
+                                                            <br>
+                                                            <br>
+                                                            <span style=\"font-size: 18px; font-weight:bold; letter-spacing:1px;padding-top:10px\">General Mountain Conditions:</span>'.$generalconditions.'
+                                                          </div>
+                                                      </td>
+                                                  </tr>
+                                                  </tbody></table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        </table>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+
+              </table>
+              </td>
+              </tr>
+              </table>
+              <section class=\"tp_vc_mw_rowwrapper\" style=\"background-color:#F9F9F9\" >
+                <article style=\"padding-top: 20px; padding-bottom: 20px;\" class=\"tp_vc_mw_rowinner  darkonlight \">
+                  <div class=\"rowbgimage_overlay\" style=\"background-color:transparent;\"></div>
+                  <div class=\"content_max_width\">
+                    <div data-vc-parallax=\"1.5\" class=\"vc_row wpb_row vc_row-fluid vc_general vc_parallax vc_parallax-off\">
+                      <div class=\"wpb_column vc_column_container vc_col-sm-6\">
+                        <div class=\"wpb_wrapper\">
+                          <div class=\"wpb_text_column wpb_content_element\">
+                            <h3 class=\"airy_headline textaligncenter headerunderline centertitle\" style=\"text-align:center\">Current Snow Totals</h3>
+                          </div>
+                          <div class=\"row\">
+                            <br>
+                            <h5>New Snow in the last 24 hours: '.$snowDepthNew.'</h5>
+                            <h5>Snow Depth Base: '.$snowDepthBase.'</h5>
+                            <h5>Snow Depth at the Summit: '.$snowDepthSummit.'</h5>
+                            <h5>Season Total: '.$snowDepthTotal.'</h5>
+                          </div>
+              <p style=\"text-align:center; font-style:italic; margin-bottom: 20px\">All snow totals are calculated in inches.</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class=\"wpb_column vc_column_container vc_col-sm-6\">
+                        <div class=\"wpb_wrapper\">
+                          <div class=\"vc_row wpb_row vc_inner vc_row-fluid\">
+                            <div class=\"wpb_column vc_column_container vc_col-sm-6\">
+                              <div class=\"wpb_wrapper\">
+                                <div class=\"wpb_text_column wpb_content_element\">
+                                  <h3 class=\"airy_headline textaligncenter headerunderline centertitle\" style=\"text-align:center\">Lifts Open:</h3>
+                                </div>
+                                <h4>'.$liftsOpen.' of '.$liftsTotal.'</h4>
+                                <br>
+                              </div>
+                            </div>
+                            <div class=\"wpb_column vc_column_container vc_col-sm-6\">
+                              <div class=\"wpb_wrapper\">
+                                <div class=\"wpb_text_column wpb_content_element\">
+                                  <h3 class=\"airy_headline textaligncenter headerunderline centertitle\" style=\"text-align:center\">Trails Open</h3>
+                                </div>
+                                <h4>
+                                 '.$runsOpen.' of '.$runsTotal.'
+                                </h4>
+                                <br>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style=\"clear:both\"></div>
+                  </div>
+                </article>
+              </section>
+
+              <section class=\"tp_vc_mw_rowwrapper\"  >
+                <article style=\"padding-top: 20px; padding-bottom: 20px;\" class=\"tp_vc_mw_rowinner  darkonlight \">
+                  <div class=\"rowbgimage_overlay\" style=\"background-color:transparent;\"></div>
+                  <div class=\"content_max_width\">
+                    <div class=\"wpb_column vc_column_container vc_col-sm-6\">
+                        <div class=\"wpb_wrapper\">
+                          <div class=\"wpb_text_column wpb_content_element\">
+                            <h3 class=\"airy_headline textaligncenter headerunderline centertitle\" style=\"text-align:center;\">Lifts</h3>
+                          </div>
+                          <div class=\"wpb_text_column wpb_content_element \">
+                            <div class=\"wpb_wrapper\">
+                              <table class=\"table table-striped table-bordered\">
+                                <tbody>
+                                  <tr>
+                                    <th scope=\"row\" >Rafferty</th>
+                                    <td>'.$chairliftraferty.'</td>
+                                  </tr>
+                                  <tr>
+                                    <th scope=\"row\" >Cougar</th>
+                                    <td>'.$chairliftcougar.'</td>
+                                  </tr>
+                                  <tr>
+                                    <th scope=\"row\" >Summit</th>
+                                    <td >'.$chairliftsummit.'</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <div class=\"wpb_text_column wpb_content_element\">
+                            <h3 class=\"airy_headline textaligncenter headerunderline centertitle\" style=\"text-align:center\">Grooming Report</h3>
+                          </div>
+                          <div class=\"wpb_text_column wpb_content_element \">
+                            <div class=\"wpb_wrapper\">
+                              <table class=\"table table-striped table-bordered\">
+                                <thead>
+                                  <tr>
+                                    <th style=\" padding:5px 10px 5px 0px\">Run</th>
+                                    <th style=\" padding:5px 10px 5px 0px\">Open</th>
+                                    <th style=\" padding:5px 10px 5px 0px\">Groomed</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td scope=\"row\" >'.$runname_array[0].'</td>
+                                        <td >'.$runopen_array[0].'</td>
+                                        <td >'.$rungroomed_array[0].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[1].'</td>
+                                          <td >'.$runopen_array[1].'</td>
+                                          <td >'.$rungroomed_array[1].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[2].'</td>
+                                          <td >'.$runopen_array[2].'</td>
+                                          <td >'.$rungroomed_array[2].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[3].'</td>
+                                          <td >'.$runopen_array[3].'</td>
+                                          <td >'.$rungroomed_array[3].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[4].'</td>
+                                          <td >'.$runopen_array[4].'</td>
+                                          <td >'.$rungroomed_array[4].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[5].'</td>
+                                          <td >'.$runopen_array[5].'</td>
+                                          <td >'.$rungroomed_array[5].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[6].'</td>
+                                          <td >'.$runopen_array[6].'</td>
+                                          <td >'.$rungroomed_array[6].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[7].'</td>
+                                          <td>'.$runopen_array[7].'</td>
+                                          <td >'.$rungroomed_array[7].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[8].'</td>
+                                          <td >'.$runopen_array[8].'</td>
+                                          <td >'.$rungroomed_array[8].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[9].'</td>
+                                          <td >'.$runopen_array[9].'</td>
+                                          <td >'.$rungroomed_array[9].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[10].'</td>
+                                          <td >'.$runopen_array[10].'</td>
+                                          <td >'.$rungroomed_array[10].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\">'.$runname_array[11].'</td>
+                                          <td >'.$runopen_array[11].'</td>
+                                          <td >'.$rungroomed_array[11].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[12].'</td>
+                                          <td >'.$runopen_array[12].'</td>
+                                          <td >'.$rungroomed_array[12].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[13].'</td>
+                                          <td >'.$runopen_array[13].'</td>
+                                          <td>'.$rungroomed_array[13].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[14].'</td>
+                                          <td >'.$runopen_array[14].'</td>
+                                          <td >'.$rungroomed_array[14].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[15].'</td>
+                                          <td >'.$runopen_array[15].'</td>
+                                          <td >'.$rungroomed_array[15].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[16].'</td>
+                                          <td >'.$runopen_array[16].'</td>
+                                          <td >'.$rungroomed_array[16].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[17].'</td>
+                                          <td >'.$runopen_array[17].'</td>
+                                          <td >'.$rungroomed_array[17].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[18].'</td>
+                                          <td >'.$runopen_array[18].'</td>
+                                          <td >'.$rungroomed_array[18].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[19].'</td>
+                                          <td >'.$runopen_array[19].'</td>
+                                          <td >'.$rungroomed_array[19].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[20].'</td>
+                                          <td >'.$runopen_array[20].'</td>
+                                          <td >'.$rungroomed_array[20].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[21].'</td>
+                                          <td >'.$runopen_array[21].'</td>
+                                          <td >'.$rungroomed_array[21].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[22].'</td>
+                                          <td >'.$runopen_array[22].'</td>
+                                          <td >'.$rungroomed_array[22].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[23].'</td>
+                                          <td >'.$runopen_array[23].'</td>
+                                          <td >'.$rungroomed_array[23].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[24].'</td>
+                                          <td >'.$runopen_array[24].'</td>
+                                          <td >'.$rungroomed_array[24].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[25].'</td>
+                                          <td >'.$runopen_array[25].'</td>
+                                          <td >'.$rungroomed_array[25].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[26].'</td>
+                                          <td >'.$runopen_array[26].'</td>
+                                          <td >'.$rungroomed_array[26].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[27].'</td>
+                                          <td >'.$runopen_array[27].'</td>
+                                          <td >'.$rungroomed_array[27].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[28].'</td>
+                                          <td >'.$runopen_array[28].'</td>
+                                          <td >'.$rungroomed_array[28].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[29].'</td>
+                                          <td >'.$runopen_array[29].'</td>
+                                          <td >'.$rungroomed_array[29].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[30].'</td>
+                                          <td >'.$runopen_array[30].'</td>
+                                          <td >'.$rungroomed_array[30].'</td>
+                                      </tr>
+                                      <tr>
+                                          <td scope=\"row\" >'.$runname_array[31].'</td>
+                                          <td >'.$runopen_array[31].'</td>
+                                          <td >'.$rungroomed_array[31].'</td>
+                                      </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style=\"clear:both\">
+                    </div>
+                  </div>
+                </article>
+              </section>
+
+              <section class=\"tp_vc_mw_rowwrapper    \" style=\"background-color:white\"  >
+                <article style=\"padding-top: 40px ; padding-bottom: 5px;\" class=\"tp_vc_mw_rowinner  lightondark \">
+                  <div class=\"rowbgimage_overlay\" style=\"background-color:#394a57;\"></div>
+                  <div class=\"content_max_width\">
+                    <div data-vc-parallax=\"1.5\" class=\"vc_row wpb_row vc_row-fluid vc_general vc_parallax vc_parallax-off\">
+                      <div class=\"wpb_column vc_column_container vc_col-sm-12\">
+                        <div class=\"wpb_wrapper\">
+                          <p class=\" wpb_content_element   \" style=\"text-align: center;\">
+                            <span class=\"callouttextlarge\" style=\"padding-right:5px\">Your Adventure Starts Now.</span><a href=\"http://www.gatemastertickets.com/snowking/categories.aspx\" class=\"button \" target=\"_blank\"><i class=\"icon-direction\"></i> Buy Tickets</a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div style=\"clear:both\"></div>
+                  </div>
+                </article>
+              </section>
+              <tr>
+              <td align=\"center\" valign=\"top\" id=\"templateFooter\">
+              <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"templateContainer\">
+              <tr>
+              <td valign=\"top\" class=\"footerContainer\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowBlock\" style=\"min-width:100%;\">
+              <tbody class=\"mcnFollowBlockOuter\">
+              <tr>
+              <td align=\"center\" valign=\"top\" style=\"padding:9px\" class=\"mcnFollowBlockInner\">
+              <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowContentContainer\" style=\"min-width:100%;\">
+              <tbody><tr>
+              <td align=\"center\" style=\"padding-left:9px;padding-right:9px;\">
+              <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"min-width: 100%;background-color: #555555;\" class=\"mcnFollowContent\">
+              <tbody><tr>
+              <td align=\"center\" valign=\"top\" style=\"padding-top:9px; padding-right:9px; padding-left:9px;\">
+              <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">
+              <tbody><tr>
+                  <td align=\"center\" valign=\"top\">
+                              <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"display:inline;\">
+                                  <tbody><tr>
+                                      <td valign=\"top\" style=\"padding-right:10px; padding-bottom:9px;\" class=\"mcnFollowContentItemContainer\">
+                                          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowContentItem\">
+                                              <tbody><tr>
+                                                  <td align=\"left\" valign=\"middle\" style=\"padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;\">
+                                                      <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"\">
+                                                          <tbody><tr>
+                                                                  <td align=\"center\" valign=\"middle\" width=\"24\" class=\"mcnFollowIconContent\">
+                                                                      <a href=\"http://snowkingmountain.com\" target=\"_blank\"><img src=\"https://cdn-images.mailchimp.com/icons/social-block-v2/outline-light-link-48.png\" style=\"display:block;\" height=\"24\" width=\"24\" class=\"\"></a>
+                                                                  </td>
+                                                          </tr>
+                                                      </tbody></table>
+                                                  </td>
+                                              </tr>
+                                          </tbody></table>
+                                      </td>
+                                  </tr>
+                              </tbody></table>
+                            <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"display:inline;\">
+                                  <tbody><tr>
+                                      <td valign=\"top\" style=\"padding-right:10px; padding-bottom:9px;\" class=\"mcnFollowContentItemContainer\">
+                                          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowContentItem\">
+                                              <tbody><tr>
+                                                  <td align=\"left\" valign=\"middle\" style=\"padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;\">
+                                                      <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"\">
+                                                          <tbody><tr>
+
+                                                                  <td align=\"center\" valign=\"middle\" width=\"24\" class=\"mcnFollowIconContent\">
+                                                                      <a href=\"http://www.facebook.com/snowkingmountain\" target=\"_blank\"><img src=\"https://cdn-images.mailchimp.com/icons/social-block-v2/outline-light-facebook-48.png\" style=\"display:block;\" height=\"24\" width=\"24\" class=\"\"></a>
+                                                                  </td>
+                                                          </tr>
+                                                      </tbody></table>
+                                                  </td>
+                                              </tr>
+                                          </tbody></table>
+                                      </td>
+                                  </tr>
+                              </tbody></table>
+                            <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"display:inline;\">
+                                  <tbody><tr>
+                                      <td valign=\"top\" style=\"padding-right:10px; padding-bottom:9px;\" class=\"mcnFollowContentItemContainer\">
+                                          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowContentItem\">
+                                              <tbody><tr>
+                                                  <td align=\"left\" valign=\"middle\" style=\"padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;\">
+                                                      <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"\">
+                                                          <tbody><tr>
+
+                                                                  <td align=\"center\" valign=\"middle\" width=\"24\" class=\"mcnFollowIconContent\">
+                                                                      <a href=\"http://www.twitter.com/snowkingmtn\" target=\"_blank\"><img src=\"https://cdn-images.mailchimp.com/icons/social-block-v2/outline-light-twitter-48.png\" style=\"display:block;\" height=\"24\" width=\"24\" class=\"\"></a>
+                                                                  </td>
+
+
+                                                          </tr>
+                                                      </tbody></table>
+                                                  </td>
+                                              </tr>
+                                          </tbody></table>
+                                      </td>
+                                  </tr>
+                              </tbody></table>
+                              <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"display:inline;\">
+                                  <tbody><tr>
+                                      <td valign=\"top\" style=\"padding-right:10px; padding-bottom:9px;\" class=\"mcnFollowContentItemContainer\">
+                                          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowContentItem\">
+                                              <tbody><tr>
+                                                  <td align=\"left\" valign=\"middle\" style=\"padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;\">
+                                                      <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"\">
+                                                          <tbody><tr>
+
+                                                                  <td align=\"center\" valign=\"middle\" width=\"24\" class=\"mcnFollowIconContent\">
+                                                                      <a href=\"mailto:marketing@snowkingmountain.com\" target=\"_blank\"><img src=\"https://cdn-images.mailchimp.com/icons/social-block-v2/outline-light-forwardtofriend-48.png\" style=\"display:block;\" height=\"24\" width=\"24\" class=\"\"></a>
+                                                                  </td>
+
+
+                                                          </tr>
+                                                      </tbody></table>
+                                                  </td>
+                                              </tr>
+                                          </tbody></table>
+                                      </td>
+                                  </tr>
+                              </tbody></table>
+                              <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"display:inline;\">
+                                  <tbody><tr>
+                                      <td valign=\"top\" style=\"padding-right:10px; padding-bottom:9px;\" class=\"mcnFollowContentItemContainer\">
+                                          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowContentItem\">
+                                              <tbody><tr>
+                                                  <td align=\"left\" valign=\"middle\" style=\"padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;\">
+                                                      <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"\">
+                                                          <tbody><tr>
+
+                                                                  <td align=\"center\" valign=\"middle\" width=\"24\" class=\"mcnFollowIconContent\">
+                                                                      <a href=\"http://instagram.com/snowkingmountain\" target=\"_blank\"><img src=\"https://cdn-images.mailchimp.com/icons/social-block-v2/outline-light-instagram-48.png\" style=\"display:block;\" height=\"24\" width=\"24\" class=\"\"></a>
+                                                                  </td>
+                                                          </tr>
+                                                      </tbody></table>
+                                                  </td>
+                                              </tr>
+                                          </tbody></table>
+                                      </td>
+                                  </tr>
+                              </tbody></table>
+                              <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"display:inline;\">
+                                  <tbody><tr>
+                                      <td valign=\"top\" style=\"padding-right:10px; padding-bottom:9px;\" class=\"mcnFollowContentItemContainer\">
+                                          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowContentItem\">
+                                              <tbody><tr>
+                                                  <td align=\"left\" valign=\"middle\" style=\"padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;\">
+                                                      <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"\">
+                                                          <tbody><tr>
+                                                                  <td align=\"center\" valign=\"middle\" width=\"24\" class=\"mcnFollowIconContent\">
+                                                                      <a href=\"http://www.youtube.com/channel/UCvS6ZhjIsaX2hC83QS6Qo8w?feature=mhee\" target=\"_blank\"><img src=\"https://cdn-images.mailchimp.com/icons/social-block-v2/outline-light-youtube-48.png\" style=\"display:block;\" height=\"24\" width=\"24\" class=\"\"></a>
+                                                                  </td>
+                                                          </tr>
+                                                      </tbody></table>
+                                                  </td>
+                                              </tr>
+                                          </tbody></table>
+                                      </td>
+                                  </tr>
+                              </tbody></table>
+                              <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"display:inline;\">
+                                  <tbody><tr>
+                                      <td valign=\"top\" style=\"padding-right:0; padding-bottom:9px;\" class=\"mcnFollowContentItemContainer\">
+                                          <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnFollowContentItem\">
+                                              <tbody><tr>
+                                                  <td align=\"left\" valign=\"middle\" style=\"padding-top:5px; padding-right:10px; padding-bottom:5px; padding-left:9px;\">
+                                                      <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"\">
+                                                          <tbody><tr>
+                                                                  <td align=\"center\" valign=\"middle\" width=\"24\" class=\"mcnFollowIconContent\">
+                                                                      <a href=\"http://plus.google.com/snowkingmountainresortjackson\" target=\"_blank\"><img src=\"https://cdn-images.mailchimp.com/icons/social-block-v2/outline-light-googleplus-48.png\" style=\"display:block;\" height=\"24\" width=\"24\" class=\"\"></a>
+                                                                  </td>
+                                                          </tr>
+                                                      </tbody></table>
+                                                  </td>
+                                              </tr>
+                                          </tbody></table>
+                                      </td>
+                                  </tr>
+                              </tbody></table>
+                  </td>
+              </tr>
+              </tbody></table>
+              </td>
+              </tr>
+              </tbody></table>
+              </td>
+              </tr>
+              </tbody></table>
+              </td>
+              </tr>
+              </tbody>
+              </table><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnCaptionBlock\">
+              <tbody class=\"mcnCaptionBlockOuter\">
+              <tr>
+              <td class=\"mcnCaptionBlockInner\" valign=\"top\" style=\"padding:9px;\">
+              <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"mcnCaptionRightContentOuter\" width=\"100%\">
+              <tbody><tr>
+              <td valign=\"top\" class=\"mcnCaptionRightContentInner\" style=\"padding:0 9px ;\">
+              <table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"mcnCaptionRightImageContentContainer\">
+              <tbody><tr>
+              <td class=\"mcnCaptionRightImageContent\" valign=\"top\">
+              <img alt=\"Snow King Mountain Logo\" src=\"https://gallery.mailchimp.com/4d028defeab552de152641210/images/567144d1-32da-4a48-9d4c-fb5244418ef9.jpg\" width=\"264\" style=\"max-width:1024px;\" class=\"mcnImage\">
+              </td>
+              </tr>
+              </tbody></table>
+              <table class=\"mcnCaptionRightTextContentContainer\" align=\"right\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"264\">
+              <tbody><tr>
+              <td valign=\"top\" class=\"mcnTextContent\" style=\"line-height: 125%;\">
+              <span style=\"font-size:10px\"><span >307-201-KING (5464)<br>
+              info@snowkingmountain.com<br>
+              100 East Snow King Ave<br>
+              PO Box 1846 • Jackson, WY 83001<br>
+              <em>© 2016&nbsp;Snow King Mountain Resort<br>
+              All rights reserved.</em><br>
+              <br>
+              To unsubscribe, </span><a href=\"*|UNSUB|*\"><span>click here.</span></a><span >&nbsp;<br>
+              To update subscription preferences, </span><a href=\"*|UPDATE_PROFILE|*\"><span >click here.</span></a></span>
+              </td>
+              </tr>
+              </tbody></table>
+              </td>
+              </tr>
+              </tbody></table>
+              </td>
+              </tr>
+              </tbody>
+              </table><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"mcnDividerBlock\" style=\"min-width:100%;\">
+              <tbody class=\"mcnDividerBlockOuter\">
+              <tr>
+              <td class=\"mcnDividerBlockInner\" style=\"min-width: 100%; padding: 10px 18px 25px;\">
+              <table class=\"mcnDividerContent\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"min-width: 100%;border-top: 2px solid #EEEEEE;\">
+              <tbody><tr>
+              <td>
+              <span></span>
+              </td>
+              </tr>
+              </tbody></table>
+              </td>
+              </tr>
+              </tbody>
+              </table></td>
+              </tr>
+              </table>
+              </td>
+              </tr>
+              </center>
+              </body>
+              </html>"}',
+              CURLOPT_CUSTOMREQUEST => "PATCH",
+              CURLOPT_HTTPHEADER => array(
+                "authorization: Basic API KEY",
+                "Content-Type: application/x-www-form-urlencoded",
+              ),
+            ));
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+
+            curl_close($curl);
+
+            if ($err) {
+              echo "cURL Error #:" . $err;
+            } else {
+              echo $response;
+            }
+}
+
+add_action("my-cron", "run_cron_script");
+?>
